@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Easy Dice</string>
+    <string name="button_height">42dp</string>
+</resources>
