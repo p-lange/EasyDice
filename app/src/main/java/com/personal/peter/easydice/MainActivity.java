@@ -13,13 +13,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mKeys;
     private HashMap<String, String> mKeyMap;
     private HashMap<String, EditText> mTextMap;
-
-
+    private AnimatorUtil animatorUtil;
 
     String resultsString;
     @BindView(R.id.resultTextView)
@@ -80,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.rollArrayLabel)
     TextView mRollArrayLabel;
 
-    int dieNum;
+   private int dieNum;
 
 
     @Override
@@ -88,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        animatorUtil = new AnimatorUtil(this);
 
         mKeys = new ArrayList<>(6);
         mKeys.add("D4");
@@ -115,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         mSharedPreferences = getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        mEditor = mSharedPreferences.edit();
 
         for (String key : mKeys){
             String textString = mSharedPreferences.getString(mKeyMap.get(key), "1");
@@ -128,19 +124,19 @@ public class MainActivity extends AppCompatActivity {
         mResultTextView.setText(resultString);
 
 
-             mD4Button.setOnClickListener(new View.OnClickListener() {
+        mD4Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD4Button);
-               takeInputAndRoll(mD4EditText.getText().toString(), 4);
+                animatorUtil.animateButton(mD4Button);
+                takeInputAndRoll(mD4EditText.getText().toString(), 4);
             }
         });
 
 
-             mD6Button.setOnClickListener(new View.OnClickListener() {
+        mD6Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD6Button);
+                animatorUtil.animateButton(mD6Button);
                 takeInputAndRoll(mD6EditText.getText().toString(), 6);
             }
         });
@@ -148,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         mD8Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD8Button);
+                animatorUtil.animateButton(mD8Button);
                 takeInputAndRoll(mD8EditText.getText().toString(), 8);
             }
         });
@@ -156,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         mD10Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD10Button);
+                animatorUtil.animateButton(mD10Button);
                 takeInputAndRoll(mD10EditText.getText().toString(), 10);
             }
         });
@@ -164,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         mD12Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD12Button);
+                animatorUtil.animateButton(mD12Button);
                 takeInputAndRoll(mD12EditText.getText().toString(), 12);
             }
         });
@@ -172,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         mD20Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD20Button);
+                animatorUtil.animateButton(mD20Button);
                 takeInputAndRoll(mD20EditText.getText().toString(), 20);
             }
         });
@@ -182,30 +178,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
+        mEditor = mSharedPreferences.edit();
         for (String key : mKeys){
             mEditor.putString(mKeyMap.get(key), mTextMap.get(key).getText().toString());
         }
         mEditor.putString(KEY_TOTAL, mTotalTextView.getText().toString());
         mEditor.putString(KEY_RESULTS, mResultTextView.getText().toString());
-
         mEditor.apply();
-
-    }
-
-    private void animateButton(Button button){
-
-        Animator scaleButton = AnimatorInflater.loadAnimator(this, R.animator.scale);
-        scaleButton.setTarget(button);
-        scaleButton.start();
-    }
-
-    private void animateText(TextView text){
-
-        Animator fadeText = AnimatorInflater.loadAnimator(this, R.animator.fade);
-        fadeText.setTarget(text);
-        fadeText.start();
-
     }
 
 
@@ -213,9 +192,8 @@ public class MainActivity extends AppCompatActivity {
         die.rollDice();
         mTotalTextView.setText(die.getTotal() + "");
         mResultTextView.setText(getResultsString(die.getResults()));
-        animateText(mTotalTextView);
-        animateText(mResultTextView);
-
+        animatorUtil.animateText(mTotalTextView);
+        animatorUtil.animateText(mResultTextView);
     }
 
     private String getResultsString(List<Integer> results) {
@@ -261,13 +239,13 @@ public class MainActivity extends AppCompatActivity {
 
         mResultTextView.setText("---");
         mTotalTextView.setText("---");
-        animateText(mTotalTextView);
-        animateText(mResultTextView);
+        animatorUtil.animateText(mTotalTextView);
+        animatorUtil.animateText(mResultTextView);
 
         for (String key : mKeys){
             EditText text = mTextMap.get(key);
             text.setText("1");
-            animateText(text);
+            animatorUtil.animateText(text);
         }
 
         return true;
