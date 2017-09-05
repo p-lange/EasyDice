@@ -1,20 +1,50 @@
 package com.personal.peter.easydice;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String PREFS_FILE = "com.personal.peter.easydice.preferences";
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
+
+    private static final String KEY_D4 = "KEY_D4";
+    private static final String KEY_D6 = "KEY_D6";
+    private static final String KEY_D8 = "KEY_D8";
+    private static final String KEY_D10 = "KEY_D10";
+    private static final String KEY_D12 = "KEY_D12";
+    private static final String KEY_D20 = "KEY_D20";
+    private static final String KEY_TOTAL = "KEY_TOTAL";
+    private static final String KEY_RESULTS = "KEY_RESULTS";
+
+    private ArrayList<String> mKeys;
+    private HashMap<String, String> mKeyMap;
+    private HashMap<String, EditText> mTextMap;
+
+
+
     String resultsString;
     @BindView(R.id.resultTextView)
     TextView mResultTextView;
@@ -59,18 +89,58 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mKeys = new ArrayList<>(6);
+        mKeys.add("D4");
+        mKeys.add("D6");
+        mKeys.add("D8");
+        mKeys.add("D10");
+        mKeys.add("D12");
+        mKeys.add("D20");
 
-        mD4Button.setOnClickListener(new View.OnClickListener() {
+        mKeyMap = new HashMap<>(6);
+        mKeyMap.put("D4", "KEY_D4");
+        mKeyMap.put("D6", "KEY_D6");
+        mKeyMap.put("D8", "KEY_D8");
+        mKeyMap.put("D10", "KEY_D10");
+        mKeyMap.put("D12", "KEY_D12");
+        mKeyMap.put("D20", "KEY_D20");
+
+        mTextMap = new HashMap<>(6);
+        mTextMap.put("D4", mD4EditText);
+        mTextMap.put("D6", mD6EditText);
+        mTextMap.put("D8", mD8EditText);
+        mTextMap.put("D10", mD10EditText);
+        mTextMap.put("D12", mD12EditText);
+        mTextMap.put("D20", mD20EditText);
+
+
+        mSharedPreferences = getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
+
+        for (String key : mKeys){
+            String textString = mSharedPreferences.getString(mKeyMap.get(key), "1");
+            mTextMap.get(key).setText(textString);
+        }
+
+        String totalString = mSharedPreferences.getString(KEY_TOTAL, "---");
+        String resultString = mSharedPreferences.getString(KEY_RESULTS, "---");
+        mTotalTextView.setText(totalString);
+        mResultTextView.setText(resultString);
+
+
+             mD4Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takeInputAndRoll(mD4EditText.getText().toString(), 4);
+                animateButton(mD4Button);
+               takeInputAndRoll(mD4EditText.getText().toString(), 4);
             }
         });
 
 
-        mD6Button.setOnClickListener(new View.OnClickListener() {
+             mD6Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                animateButton(mD6Button);
                 takeInputAndRoll(mD6EditText.getText().toString(), 6);
             }
         });
@@ -78,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         mD8Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                animateButton(mD8Button);
                 takeInputAndRoll(mD8EditText.getText().toString(), 8);
             }
         });
@@ -85,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         mD10Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                animateButton(mD10Button);
                 takeInputAndRoll(mD10EditText.getText().toString(), 10);
             }
         });
@@ -92,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         mD12Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                animateButton(mD12Button);
                 takeInputAndRoll(mD12EditText.getText().toString(), 12);
             }
         });
@@ -99,16 +172,49 @@ public class MainActivity extends AppCompatActivity {
         mD20Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                animateButton(mD20Button);
                 takeInputAndRoll(mD20EditText.getText().toString(), 20);
             }
         });
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        for (String key : mKeys){
+            mEditor.putString(mKeyMap.get(key), mTextMap.get(key).getText().toString());
+        }
+        mEditor.putString(KEY_TOTAL, mTotalTextView.getText().toString());
+        mEditor.putString(KEY_RESULTS, mResultTextView.getText().toString());
+
+        mEditor.apply();
+
+    }
+
+    private void animateButton(Button button){
+
+        Animator scaleButton = AnimatorInflater.loadAnimator(this, R.animator.scale);
+        scaleButton.setTarget(button);
+        scaleButton.start();
+    }
+
+    private void animateText(TextView text){
+
+        Animator fadeText = AnimatorInflater.loadAnimator(this, R.animator.fade);
+        fadeText.setTarget(text);
+        fadeText.start();
+
+    }
+
+
     private void rollAndSet(Dice die) {
         die.rollDice();
         mTotalTextView.setText(die.getTotal() + "");
         mResultTextView.setText(getResultsString(die.getResults()));
+        animateText(mTotalTextView);
+        animateText(mResultTextView);
 
     }
 
@@ -144,5 +250,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        mResultTextView.setText("---");
+        mTotalTextView.setText("---");
+        animateText(mTotalTextView);
+        animateText(mResultTextView);
+
+        for (String key : mKeys){
+            EditText text = mTextMap.get(key);
+            text.setText("1");
+            animateText(text);
+        }
+
+        return true;
+    }
 }
