@@ -1,7 +1,5 @@
 package com.personal.peter.easydice;
 
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -12,14 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,21 +22,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_FILE = "com.personal.peter.easydice.preferences";
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
-
-    private static final String KEY_D4 = "KEY_D4";
-    private static final String KEY_D6 = "KEY_D6";
-    private static final String KEY_D8 = "KEY_D8";
-    private static final String KEY_D10 = "KEY_D10";
-    private static final String KEY_D12 = "KEY_D12";
-    private static final String KEY_D20 = "KEY_D20";
     private static final String KEY_TOTAL = "KEY_TOTAL";
     private static final String KEY_RESULTS = "KEY_RESULTS";
-
     private ArrayList<String> mKeys;
     private HashMap<String, String> mKeyMap;
     private HashMap<String, EditText> mTextMap;
-
-
+    private AnimatorUtil animatorUtil;
 
     String resultsString;
     @BindView(R.id.resultTextView)
@@ -80,14 +64,14 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.rollArrayLabel)
     TextView mRollArrayLabel;
 
-    int dieNum;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        animatorUtil = new AnimatorUtil(this);
+        final DiceUtil diceUtil = new DiceUtil(this, mTotalTextView, mResultTextView);
 
         mKeys = new ArrayList<>(6);
         mKeys.add("D4");
@@ -115,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         mSharedPreferences = getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        mEditor = mSharedPreferences.edit();
 
         for (String key : mKeys){
             String textString = mSharedPreferences.getString(mKeyMap.get(key), "1");
@@ -128,126 +111,65 @@ public class MainActivity extends AppCompatActivity {
         mResultTextView.setText(resultString);
 
 
-             mD4Button.setOnClickListener(new View.OnClickListener() {
+        mD4Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD4Button);
-               takeInputAndRoll(mD4EditText.getText().toString(), 4);
+                animatorUtil.animateButton(mD4Button);
+                diceUtil.takeInputAndRoll(mD4EditText.getText().toString(), 4);
             }
         });
 
-
-             mD6Button.setOnClickListener(new View.OnClickListener() {
+        mD6Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD6Button);
-                takeInputAndRoll(mD6EditText.getText().toString(), 6);
+                animatorUtil.animateButton(mD6Button);
+                diceUtil.takeInputAndRoll(mD6EditText.getText().toString(), 6);
             }
         });
 
         mD8Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD8Button);
-                takeInputAndRoll(mD8EditText.getText().toString(), 8);
+                animatorUtil.animateButton(mD8Button);
+                diceUtil.takeInputAndRoll(mD8EditText.getText().toString(), 8);
             }
         });
 
         mD10Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD10Button);
-                takeInputAndRoll(mD10EditText.getText().toString(), 10);
+                animatorUtil.animateButton(mD10Button);
+                diceUtil.takeInputAndRoll(mD10EditText.getText().toString(), 10);
             }
         });
 
         mD12Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD12Button);
-                takeInputAndRoll(mD12EditText.getText().toString(), 12);
+                animatorUtil.animateButton(mD12Button);
+                diceUtil.takeInputAndRoll(mD12EditText.getText().toString(), 12);
             }
         });
 
         mD20Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                animateButton(mD20Button);
-                takeInputAndRoll(mD20EditText.getText().toString(), 20);
+                animatorUtil.animateButton(mD20Button);
+                diceUtil.takeInputAndRoll(mD20EditText.getText().toString(), 20);
             }
         });
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
+        mEditor = mSharedPreferences.edit();
         for (String key : mKeys){
             mEditor.putString(mKeyMap.get(key), mTextMap.get(key).getText().toString());
         }
         mEditor.putString(KEY_TOTAL, mTotalTextView.getText().toString());
         mEditor.putString(KEY_RESULTS, mResultTextView.getText().toString());
-
         mEditor.apply();
-
-    }
-
-    private void animateButton(Button button){
-
-        Animator scaleButton = AnimatorInflater.loadAnimator(this, R.animator.scale);
-        scaleButton.setTarget(button);
-        scaleButton.start();
-    }
-
-    private void animateText(TextView text){
-
-        Animator fadeText = AnimatorInflater.loadAnimator(this, R.animator.fade);
-        fadeText.setTarget(text);
-        fadeText.start();
-
-    }
-
-
-    private void rollAndSet(Dice die) {
-        die.rollDice();
-        mTotalTextView.setText(die.getTotal() + "");
-        mResultTextView.setText(getResultsString(die.getResults()));
-        animateText(mTotalTextView);
-        animateText(mResultTextView);
-
-    }
-
-    private String getResultsString(List<Integer> results) {
-        List<String> stringList = new ArrayList<>();
-        for (int value : results) stringList.add(Integer.toString(value));
-        StringBuilder result = new StringBuilder();
-        for (String string : stringList) {
-            result.append(string);
-            result.append(", ");
-        }
-        return result.length() > 0 ? result.substring(0, result.length() - 2) : "";
-    }
-
-
-    private boolean isValidInput(int input) {
-        return (input > 0 && input < 61);
-    }
-
-    private void displayToast() {
-        Toast.makeText(this, "Must be between 1 and 60 dice.", Toast.LENGTH_SHORT).show();
-    }
-
-    private void takeInputAndRoll(String string, int dieSize) {
-        try {
-            dieNum = Integer.parseInt(string);
-            if (isValidInput(dieNum)) {
-                Dice die = new Dice(dieNum, dieSize, 0, 0);
-                rollAndSet(die);
-            } else displayToast();
-        } catch (NumberFormatException e) {
-            displayToast();
-        }
     }
 
     @Override
@@ -261,15 +183,14 @@ public class MainActivity extends AppCompatActivity {
 
         mResultTextView.setText("---");
         mTotalTextView.setText("---");
-        animateText(mTotalTextView);
-        animateText(mResultTextView);
+        animatorUtil.animateText(mTotalTextView);
+        animatorUtil.animateText(mResultTextView);
 
         for (String key : mKeys){
             EditText text = mTextMap.get(key);
             text.setText("1");
-            animateText(text);
+            animatorUtil.animateText(text);
         }
-
         return true;
     }
 }
