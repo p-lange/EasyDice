@@ -12,10 +12,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.view.View.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,8 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences.Editor mEditor;
     private static final String KEY_TOTAL = "KEY_TOTAL";
     private static final String KEY_RESULTS = "KEY_RESULTS";
-    private ArrayList<String> mKeys;
-    private HashMap<String, String> mKeyMap;
     private HashMap<String, EditText> mTextMap;
     private AnimatorUtil animatorUtil;
 
@@ -73,99 +74,34 @@ public class MainActivity extends AppCompatActivity {
         animatorUtil = new AnimatorUtil(this);
         final DiceUtil diceUtil = new DiceUtil(this, mTotalTextView, mResultTextView);
 
-        mKeys = new ArrayList<>(6);
-        mKeys.add("D4");
-        mKeys.add("D6");
-        mKeys.add("D8");
-        mKeys.add("D10");
-        mKeys.add("D12");
-        mKeys.add("D20");
+        //initializes the buttons and edit text. Add more dice here if desired.
+        mTextMap = new HashMap<>();
+        initializer(mD4Button, mD4EditText, 4);
+        initializer(mD6Button, mD6EditText, 6);
+        initializer(mD8Button, mD8EditText, 8);
+        initializer(mD10Button, mD10EditText, 10);
+        initializer(mD12Button, mD12EditText, 12);
+        initializer(mD20Button, mD20EditText, 20);
 
-        mKeyMap = new HashMap<>(6);
-        mKeyMap.put("D4", "KEY_D4");
-        mKeyMap.put("D6", "KEY_D6");
-        mKeyMap.put("D8", "KEY_D8");
-        mKeyMap.put("D10", "KEY_D10");
-        mKeyMap.put("D12", "KEY_D12");
-        mKeyMap.put("D20", "KEY_D20");
-
-        mTextMap = new HashMap<>(6);
-        mTextMap.put("D4", mD4EditText);
-        mTextMap.put("D6", mD6EditText);
-        mTextMap.put("D8", mD8EditText);
-        mTextMap.put("D10", mD10EditText);
-        mTextMap.put("D12", mD12EditText);
-        mTextMap.put("D20", mD20EditText);
-
-
+        //Handle saved dice results and inputs, loads them, etc
         mSharedPreferences = getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-
-        for (String key : mKeys){
-            String textString = mSharedPreferences.getString(mKeyMap.get(key), "1");
+        for (String key : mTextMap.keySet()){
+            String textString = mSharedPreferences.getString(key, "1");
             mTextMap.get(key).setText(textString);
         }
-
         String totalString = mSharedPreferences.getString(KEY_TOTAL, "---");
         String resultString = mSharedPreferences.getString(KEY_RESULTS, "---");
         mTotalTextView.setText(totalString);
         mResultTextView.setText(resultString);
 
-
-        mD4Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animatorUtil.animateButton(mD4Button);
-                diceUtil.takeInputAndRoll(mD4EditText.getText().toString(), 4);
-            }
-        });
-
-        mD6Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animatorUtil.animateButton(mD6Button);
-                diceUtil.takeInputAndRoll(mD6EditText.getText().toString(), 6);
-            }
-        });
-
-        mD8Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animatorUtil.animateButton(mD8Button);
-                diceUtil.takeInputAndRoll(mD8EditText.getText().toString(), 8);
-            }
-        });
-
-        mD10Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animatorUtil.animateButton(mD10Button);
-                diceUtil.takeInputAndRoll(mD10EditText.getText().toString(), 10);
-            }
-        });
-
-        mD12Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animatorUtil.animateButton(mD12Button);
-                diceUtil.takeInputAndRoll(mD12EditText.getText().toString(), 12);
-            }
-        });
-
-        mD20Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animatorUtil.animateButton(mD20Button);
-                diceUtil.takeInputAndRoll(mD20EditText.getText().toString(), 20);
-            }
-        });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mEditor = mSharedPreferences.edit();
-        for (String key : mKeys){
-            mEditor.putString(mKeyMap.get(key), mTextMap.get(key).getText().toString());
+        for (String key : mTextMap.keySet()){
+            mEditor.putString(key, mTextMap.get(key).getText().toString());
         }
         mEditor.putString(KEY_TOTAL, mTotalTextView.getText().toString());
         mEditor.putString(KEY_RESULTS, mResultTextView.getText().toString());
@@ -186,11 +122,24 @@ public class MainActivity extends AppCompatActivity {
         animatorUtil.animateText(mTotalTextView);
         animatorUtil.animateText(mResultTextView);
 
-        for (String key : mKeys){
+        for (String key : mTextMap.keySet()){
             EditText text = mTextMap.get(key);
             text.setText("1");
             animatorUtil.animateText(text);
         }
         return true;
+    }
+
+
+    public void initializer(final Button button, final EditText editText, final int dieSize){
+        mTextMap.put("KEY_D"+dieSize, editText);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animatorUtil.animateButton(button);
+                DiceUtil diceUtil = new DiceUtil(MainActivity.this, mTotalTextView, mResultTextView);
+                diceUtil.takeInputAndRoll(editText.getText().toString(), dieSize);
+            }
+        });
     }
 }
