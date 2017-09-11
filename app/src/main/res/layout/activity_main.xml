@@ -72,44 +72,18 @@
 
             <EditText
                 android:id="@+id/d4EditText"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:textColor="@color/text_color"
-                android:inputType="number"
-                android:text="1"
-                android:textAlignment="center"
-                tools:layout_editor_absoluteX="8dp"
-                tools:layout_editor_absoluteY="-56dp"
-                tools:text="1"/>
+                style="@style/DiceButtonEditText"
+                />
 
             <EditText
                 android:id="@+id/d6EditText"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:textColor="@color/text_color"
-                android:ems="10"
-                android:inputType="number"
-                android:text="1"
-                android:textAlignment="center"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="80dp"
-                tools:text="1"/>
+                style="@style/DiceButtonEditText"
+                />
 
             <EditText
                 android:id="@+id/d8EditText"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:textColor="@color/text_color"
-                android:inputType="number"
-                android:text="1"
-                android:textAlignment="center"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="145dp"
-                tools:text="1"/>
+                style="@style/DiceButtonEditText"
+                />
 
         </LinearLayout>
 
@@ -124,29 +98,18 @@
 
             <Button
                 android:id="@+id/d4Button"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:background="@color/button_background"
-                android:textColor="@color/button_text"
-                android:layout_marginBottom="8dp"
+                style="@style/DiceButtonStyle"
                 android:text="d4"/>
 
             <Button
                 android:id="@+id/d6Button"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:background="@color/button_background"
-                android:layout_marginBottom="8dp"
+                style="@style/DiceButtonStyle"
                 android:text="d6"
-                android:textColor="@color/button_text"
                 />
 
             <Button
                 android:id="@+id/d8Button"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:textColor="@color/button_text"
-                android:background="@color/button_background"
+                style="@style/DiceButtonStyle"
                 android:text="d8"/>
         </LinearLayout>
 
@@ -207,36 +170,18 @@
 
             <EditText
                 android:id="@+id/d10EditText"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:textColor="@color/text_color"
-                android:inputType="number"
-                android:text="1"
-                android:textAlignment="center"/>
+                style="@style/DiceButtonEditText"
+                />
 
             <EditText
                 android:id="@+id/d12EditText"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:textColor="@color/text_color"
-                android:inputType="number"
-                android:text="1"
-                android:textAlignment="center"/>
+                style="@style/DiceButtonEditText"
+                />
 
             <EditText
                 android:id="@+id/d20EditText"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:textColor="@color/text_color"
-                android:inputType="number"
-                android:text="1"
-                android:textAlignment="center"/>
+                style="@style/DiceButtonEditText"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -249,32 +194,21 @@
 
             <Button
                 android:id="@+id/d10Button"
-                android:layout_width="match_parent"
-                android:background="@color/button_background"
-                android:layout_marginBottom="8dp"
-                android:textColor="@color/button_text"
-                android:layout_height="42dp"
+                style="@style/DiceButtonStyle"
                 android:text="d10"
-                android:textAlignment="center"/>
+               />
 
             <Button
                 android:id="@+id/d12Button"
-                android:layout_width="match_parent"
-                android:background="@color/button_background"
-                android:layout_marginBottom="8dp"
-                android:textColor="@color/button_text"
-                android:layout_height="42dp"
+                style="@style/DiceButtonStyle"
                 android:text="d12"
-                android:textAlignment="center"/>
+                />
 
             <Button
                 android:id="@+id/d20Button"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:textColor="@color/button_text"
-                android:background="@color/button_background"
+                style="@style/DiceButtonStyle"
                 android:text="d20"
-                android:textAlignment="center"/>
+                />
         </LinearLayout>
     </LinearLayout>
 
