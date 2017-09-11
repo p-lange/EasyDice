@@ -99,18 +99,18 @@
             <Button
                 android:id="@+id/d4Button"
                 style="@style/DiceButtonStyle"
-                android:text="d4"/>
+                android:text="@string/d4Button"/>
 
             <Button
                 android:id="@+id/d6Button"
                 style="@style/DiceButtonStyle"
-                android:text="d6"
+                android:text="@string/d6Button"
                 />
 
             <Button
                 android:id="@+id/d8Button"
                 style="@style/DiceButtonStyle"
-                android:text="d8"/>
+                android:text="@string/d8Button"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -195,19 +195,19 @@
             <Button
                 android:id="@+id/d10Button"
                 style="@style/DiceButtonStyle"
-                android:text="d10"
+                android:text="@string/d10Button"
                />
 
             <Button
                 android:id="@+id/d12Button"
                 style="@style/DiceButtonStyle"
-                android:text="d12"
+                android:text="@string/d12Button"
                 />
 
             <Button
                 android:id="@+id/d20Button"
                 style="@style/DiceButtonStyle"
-                android:text="d20"
+                android:text="@string/d20Button"
                 />
         </LinearLayout>
     </LinearLayout>
